@@ -3,8 +3,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.mail import send_mail
 from django.views.generic import ListView
 
-from .models import Post
-from .forms import EmailPostForm
+from .models import Post, Comment
+from .forms import EmailPostForm, CommentForm
 
 def post_list(request):
     posts_list = Post.published.all()
@@ -23,7 +23,25 @@ def post_list(request):
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post, slug=post, status='published', publish__year=year, publish__month=month, publish__day=day)
-    return render(request, 'blog/post/detail.html', {'post': post})
+
+    #List of active comments for this post
+    comments = post.comments.filter(active=True)
+
+    new_comment = None
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            # Create comment obj but not saved to DB
+            new_comment = comment_form.save(commit=False)
+            # Associate comment with the current post
+            new_comment.post = post
+
+            new_comment.save()
+        else:
+            new_comment = CommentForm()
+
+    return render(request, 'blog/post/detail.html', {'post': post, 'comments':comments, 'new_comment': new_comment,
+                                                     'comment_form': comment_form})
 
 def post_share(request, post_id):
     post = get_object_or_404(Post, id=post_id, status='published')

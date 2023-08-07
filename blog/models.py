@@ -44,7 +44,7 @@ class Comment(models.Model):
     active = models.BooleanField(default=True) # used to manually deactivate inappropriate comments
 
     class Meta:
-        oredering = ('created',)
+        ordering = ('created',)
         
     def __str__(self) -> str:
         return f'Comment by {self.name} on {self.post}'

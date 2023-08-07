@@ -6,7 +6,7 @@
     <p class="date"> Published {{ post.publish }} by {{ post.author }} </p>
     {{ post.body|linebreaks }}
     {% with comments.count as total_comments %}
-        <p> {{ total_comments }} comment{{ total_comments|pluralize }} </p>
+        <h2> {{ total_comments }} comment{{ total_comments|pluralize }} </h2>
     {% endwith %}
     {% for comment in comments %}
         <div class="comment">
@@ -23,7 +23,7 @@
         <h2> Your comment has been added. </h2>
     {% else %}
         <h2> Add a new comment </h2>
-        <form action="." method="post">
+        <form method="post">
             {{ comment_form.as_p }}
             {% csrf_token %}
             <p><input type="submit" value="Add comment"></p>
